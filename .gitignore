@@ -1,0 +1,5 @@
+lex.yy.c
+analizador
+*.o
+__pycache__/
+*.pyc

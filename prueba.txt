@@ -1,0 +1,13 @@
+// Programa de prueba
+int x = 10;
+float y = 3.14;
+
+if (x >= y) {
+    print(x);
+} else {
+    print(y);
+}
+
+/* comentario
+   de bloque */
+int z = x + y * 2;
