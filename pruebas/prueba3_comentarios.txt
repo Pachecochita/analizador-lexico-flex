@@ -1,0 +1,7 @@
+// Esto es un comentario de linea
+int x = 5; // comentario al final de la linea
+
+/* Comentario
+   de varias lineas */
+float y = 2.5;
+/* otro */ print(y);

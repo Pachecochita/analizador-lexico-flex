@@ -1,0 +1,6 @@
+int a = 5 @ 3;
+float b = 3.;
+int c = 1.2.3;
+x = $valor;
+if (a ! b) { print(a); }
+int 2abc = 7;

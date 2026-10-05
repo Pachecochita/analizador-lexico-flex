@@ -1,0 +1,5 @@
+int resultado = (2 + 3) * 4 - 1;
+float promedio = (10 + 20 + 30) / 3;
+if ((a + b) >= (c * 2)) {
+    print(resultado);
+}

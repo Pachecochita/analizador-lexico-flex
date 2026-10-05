@@ -1,0 +1,12 @@
+int a = 5;
+int b = 10;
+
+if (a < b) {
+    print(a);
+} else {
+    print(b);
+}
+
+while (a != b) {
+    a = a + 1;
+}

@@ -1,0 +1,2 @@
+ERROR_SINTACTICO	linea 2: syntax error cerca de 'print'
+ANALISIS_SINTACTICO	incorrecto

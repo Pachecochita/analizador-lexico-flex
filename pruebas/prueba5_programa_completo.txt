@@ -1,0 +1,15 @@
+/* Programa de ejemplo: suma de los primeros numeros */
+int limite = 10;
+int suma = 0;
+int i = 1;
+
+while (i <= limite) {
+    suma = suma + i;
+    i = i + 1;
+}
+
+if (suma > 50) {
+    print(suma);
+} else {
+    print(0);
+}

@@ -1,0 +1,5 @@
+int edad = 25;
+float precio = 99.50;
+int contador = 0;
+float _temp = 0.5;
+int valor2 = 100;

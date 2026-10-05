@@ -1,0 +1,2 @@
+ERROR_SINTACTICO	linea 3: syntax error cerca de ''
+ANALISIS_SINTACTICO	incorrecto
