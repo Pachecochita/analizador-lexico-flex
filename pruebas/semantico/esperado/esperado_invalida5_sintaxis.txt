@@ -1,0 +1,2 @@
+ERROR_SINTACTICO	2	error de sintaxis cerca de ';'
+ANALISIS_SEMANTICO	incorrecto	1	0

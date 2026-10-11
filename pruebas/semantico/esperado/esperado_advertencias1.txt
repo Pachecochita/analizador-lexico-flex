@@ -1,0 +1,10 @@
+SIMBOLO	x	int	0	1	si	si
+SIMBOLO	sinUsar	int	0	2	si	no
+SIMBOLO	y	int	0	3	no	si
+SIMBOLO	f	float	0	5	si	si
+SIMBOLO	x	int	1	7	si	si
+ADVERTENCIA	2	variable 'sinUsar' declarada pero nunca usada
+ADVERTENCIA	4	'y' se usa sin tener valor asignado
+ADVERTENCIA	6	comparar float con == o != puede dar resultados inexactos
+ADVERTENCIA	7	la variable 'x' oculta a otra del bloque exterior (linea 1)
+ANALISIS_SEMANTICO	correcto	0	4

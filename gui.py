@@ -1,8 +1,9 @@
 """
 gui.py
 Interfaz grafica (Tkinter) para los analizadores de MiniLang.
-Pestana 1: Analisis Lexico     -> llama a analizador.exe (Flex)
-Pestana 2: Analisis Sintactico -> llama a sintactico.exe (Flex + Bison)
+Pestana 1: Analisis Lexico     -> analizador.exe  (Flex)
+Pestana 2: Analisis Sintactico -> sintactico.exe  (Flex + Bison)
+Pestana 3: Analisis Semantico  -> semantico.exe   (Flex + Bison)
 """
 
 import os
@@ -14,6 +15,7 @@ from tkinter import ttk, filedialog, messagebox
 CARPETA = os.path.dirname(os.path.abspath(__file__))
 EXE_LEXICO = "analizador.exe" if os.name == "nt" else "./analizador"
 EXE_SINTACTICO = "sintactico.exe" if os.name == "nt" else "./sintactico"
+EXE_SEMANTICO = "semantico.exe" if os.name == "nt" else "./semantico"
 
 CODIGO_EJEMPLO = (
     "int x = 10;\n"
@@ -23,16 +25,58 @@ CODIGO_EJEMPLO = (
     "}"
 )
 
+CODIGO_EJEMPLO_SEMANTICO = (
+    "int edad = 20;\n"
+    "float promedio = 8.5;\n"
+    "int resultado = promedio * 2;\n"
+    "if (edad >= 18) {\n"
+    "    int mayor = 1;\n"
+    "    print(total);\n"
+    "}"
+)
+
 
 def ejecutar(nombre_exe, ruta_codigo):
     ruta_ejecutable = os.path.join(CARPETA, nombre_exe)
-    return subprocess.run([ruta_ejecutable, ruta_codigo], capture_output=True, text=True)
+    return subprocess.run(
+        [ruta_ejecutable, ruta_codigo],
+        capture_output=True, text=True, encoding="utf-8", errors="replace",
+    )
 
 
 def guardar_temporal(codigo):
     with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False, encoding="utf-8") as tmp:
         tmp.write(codigo)
         return tmp.name
+
+
+def leer_archivo_en(texto_widget, carpeta_inicial=None):
+    ruta = filedialog.askopenfilename(
+        initialdir=carpeta_inicial,
+        filetypes=[("Archivos de texto", "*.txt"), ("Todos", "*.*")],
+    )
+    if ruta:
+        with open(ruta, "r", encoding="utf-8") as f:
+            texto_widget.delete("1.0", tk.END)
+            texto_widget.insert(tk.END, f.read())
+
+
+def correr_analizador(nombre_exe, codigo):
+    """Guarda el codigo en un archivo temporal y corre el ejecutable.
+    Devuelve el resultado o None si no se pudo ejecutar."""
+    ruta_tmp = guardar_temporal(codigo)
+    try:
+        return ejecutar(nombre_exe, ruta_tmp)
+    except FileNotFoundError:
+        messagebox.showerror(
+            "Ejecutable no encontrado",
+            f"No se encontro '{nombre_exe}' en la carpeta del proyecto.\n"
+            "Compila primero (ver README.md).",
+        )
+        return None
+    finally:
+        if os.path.exists(ruta_tmp):
+            os.remove(ruta_tmp)
 
 
 # ---------- Pestana Lexico ----------
@@ -43,16 +87,9 @@ def analizar_lexico():
         messagebox.showwarning("Aviso", "Escribe o carga codigo para analizar.")
         return
 
-    ruta_tmp = guardar_temporal(codigo)
-    try:
-        resultado = ejecutar(EXE_LEXICO, ruta_tmp)
-    except FileNotFoundError:
-        messagebox.showerror("Ejecutable no encontrado", f"No se encontro '{EXE_LEXICO}'.\nCompila primero (ver README.md).")
-        os.remove(ruta_tmp)
+    resultado = correr_analizador(EXE_LEXICO, codigo)
+    if resultado is None:
         return
-    finally:
-        if os.path.exists(ruta_tmp):
-            os.remove(ruta_tmp)
 
     for fila in tabla_lexico.get_children():
         tabla_lexico.delete(fila)
@@ -76,11 +113,7 @@ def analizar_lexico():
 
 
 def cargar_archivo_lexico():
-    ruta = filedialog.askopenfilename(filetypes=[("Archivos de texto", "*.txt"), ("Todos", "*.*")])
-    if ruta:
-        with open(ruta, "r", encoding="utf-8") as f:
-            texto_lexico.delete("1.0", tk.END)
-            texto_lexico.insert(tk.END, f.read())
+    leer_archivo_en(texto_lexico)
 
 
 def limpiar_lexico():
@@ -98,16 +131,9 @@ def analizar_sintactico():
         messagebox.showwarning("Aviso", "Escribe o carga codigo para analizar.")
         return
 
-    ruta_tmp = guardar_temporal(codigo)
-    try:
-        resultado = ejecutar(EXE_SINTACTICO, ruta_tmp)
-    except FileNotFoundError:
-        messagebox.showerror("Ejecutable no encontrado", f"No se encontro '{EXE_SINTACTICO}'.\nCompila primero (ver README.md).")
-        os.remove(ruta_tmp)
+    resultado = correr_analizador(EXE_SINTACTICO, codigo)
+    if resultado is None:
         return
-    finally:
-        if os.path.exists(ruta_tmp):
-            os.remove(ruta_tmp)
 
     salida_texto.config(state="normal")
     salida_texto.delete("1.0", tk.END)
@@ -133,11 +159,7 @@ def analizar_sintactico():
 
 
 def cargar_archivo_sintactico():
-    ruta = filedialog.askopenfilename(filetypes=[("Archivos de texto", "*.txt"), ("Todos", "*.*")])
-    if ruta:
-        with open(ruta, "r", encoding="utf-8") as f:
-            texto_sintactico.delete("1.0", tk.END)
-            texto_sintactico.insert(tk.END, f.read())
+    leer_archivo_en(texto_sintactico)
 
 
 def limpiar_sintactico():
@@ -148,12 +170,86 @@ def limpiar_sintactico():
     estado_sintactico.config(text="")
 
 
+# ---------- Pestana Semantico ----------
+
+ETIQUETAS_MENSAJE = {
+    "ERROR_SEMANTICO": ("Error semantico", "error"),
+    "ERROR_SINTACTICO": ("Error sintactico", "error"),
+    "ERROR_LEXICO": ("Error lexico", "error"),
+    "ADVERTENCIA": ("Advertencia", "aviso"),
+}
+
+
+def limpiar_resultados_semantico():
+    for fila in tabla_simbolos.get_children():
+        tabla_simbolos.delete(fila)
+    for fila in tabla_mensajes.get_children():
+        tabla_mensajes.delete(fila)
+
+
+def analizar_semantico():
+    codigo = texto_semantico.get("1.0", tk.END)
+    if not codigo.strip():
+        messagebox.showwarning("Aviso", "Escribe o carga codigo para analizar.")
+        return
+
+    resultado = correr_analizador(EXE_SEMANTICO, codigo)
+    if resultado is None:
+        return
+
+    limpiar_resultados_semantico()
+
+    correcto = False
+    n_errores = 0
+    n_avisos = 0
+
+    for linea in resultado.stdout.strip().split("\n"):
+        partes = linea.split("\t")
+        if not partes or not partes[0]:
+            continue
+        clave = partes[0]
+
+        if clave == "SIMBOLO" and len(partes) == 7:
+            _, nombre, tipo, nivel, linea_decl, inicializada, usada = partes
+            ambito = "global" if nivel == "0" else f"bloque {nivel}"
+            tabla_simbolos.insert("", tk.END, values=(nombre, tipo, ambito, linea_decl, inicializada, usada))
+
+        elif clave in ETIQUETAS_MENSAJE and len(partes) == 3:
+            etiqueta, tag = ETIQUETAS_MENSAJE[clave]
+            tabla_mensajes.insert("", tk.END, values=(etiqueta, partes[1], partes[2]), tags=(tag,))
+
+        elif clave == "ANALISIS_SEMANTICO" and len(partes) == 4:
+            correcto = partes[1] == "correcto"
+            n_errores = int(partes[2])
+            n_avisos = int(partes[3])
+
+    if resultado.stderr.strip():
+        messagebox.showerror("Error del analizador", resultado.stderr)
+
+    estado_semantico.config(
+        text=("Resultado: CORRECTO" if correcto else "Resultado: INCORRECTO")
+        + f"   |   Errores: {n_errores}   |   Advertencias: {n_avisos}",
+        fg="#2e7d32" if correcto else "#c62828",
+    )
+
+
+def cargar_archivo_semantico():
+    carpeta = os.path.join(CARPETA, "pruebas", "semantico")
+    leer_archivo_en(texto_semantico, carpeta if os.path.isdir(carpeta) else None)
+
+
+def limpiar_semantico():
+    texto_semantico.delete("1.0", tk.END)
+    limpiar_resultados_semantico()
+    estado_semantico.config(text="")
+
+
 # ---------- Interfaz ----------
 
 ventana = tk.Tk()
 ventana.title("Analizadores MiniLang - Flex y Bison")
-ventana.geometry("950x680")
-ventana.minsize(750, 550)
+ventana.geometry("1000x780")
+ventana.minsize(800, 600)
 
 notebook = ttk.Notebook(ventana)
 notebook.pack(fill=tk.BOTH, expand=True, padx=8, pady=8)
@@ -216,4 +312,63 @@ salida_texto.pack(fill=tk.BOTH, expand=True, padx=10, pady=(0, 5))
 estado_sintactico = tk.Label(pestana_sintactico, text="", font=("Arial", 10, "bold"))
 estado_sintactico.pack(anchor="w", padx=10, pady=(0, 8))
 
-ventana.mainloop()
+# --- Pestana 3: Semantico ---
+pestana_semantico = tk.Frame(notebook)
+notebook.add(pestana_semantico, text="Analisis Semantico")
+
+frame_botones_m = tk.Frame(pestana_semantico)
+frame_botones_m.pack(fill=tk.X, padx=10, pady=8)
+tk.Button(frame_botones_m, text="Cargar archivo", command=cargar_archivo_semantico).pack(side=tk.LEFT)
+tk.Button(frame_botones_m, text="Analizar", command=analizar_semantico, bg="#4CAF50", fg="white",
+          font=("Arial", 10, "bold"), padx=12).pack(side=tk.LEFT, padx=8)
+tk.Button(frame_botones_m, text="Limpiar", command=limpiar_semantico).pack(side=tk.LEFT)
+
+tk.Label(pestana_semantico, text="Codigo fuente:", font=("Arial", 10, "bold")).pack(anchor="w", padx=10)
+texto_semantico = tk.Text(pestana_semantico, height=9, font=("Consolas", 11), wrap="none")
+texto_semantico.pack(fill=tk.X, padx=10, pady=(0, 8))
+texto_semantico.insert(tk.END, CODIGO_EJEMPLO_SEMANTICO)
+
+tk.Label(pestana_semantico, text="Tabla de simbolos:", font=("Arial", 10, "bold")).pack(anchor="w", padx=10)
+frame_simbolos = tk.Frame(pestana_semantico)
+frame_simbolos.pack(fill=tk.BOTH, expand=True, padx=10, pady=(0, 8))
+
+tabla_simbolos = ttk.Treeview(
+    frame_simbolos, height=6, show="headings",
+    columns=("nombre", "tipo", "ambito", "linea", "inicializada", "usada"),
+)
+for col, titulo, ancho in (
+    ("nombre", "Nombre", 200), ("tipo", "Tipo", 90), ("ambito", "Ambito", 110),
+    ("linea", "Linea decl.", 90), ("inicializada", "Con valor inicial", 130), ("usada", "Usada", 80),
+):
+    tabla_simbolos.heading(col, text=titulo)
+    tabla_simbolos.column(col, width=ancho, anchor="w")
+scroll_sim = ttk.Scrollbar(frame_simbolos, orient="vertical", command=tabla_simbolos.yview)
+tabla_simbolos.configure(yscrollcommand=scroll_sim.set)
+tabla_simbolos.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+scroll_sim.pack(side=tk.RIGHT, fill=tk.Y)
+
+tk.Label(pestana_semantico, text="Errores y advertencias:", font=("Arial", 10, "bold")).pack(anchor="w", padx=10)
+frame_mensajes = tk.Frame(pestana_semantico)
+frame_mensajes.pack(fill=tk.BOTH, expand=True, padx=10, pady=(0, 5))
+
+tabla_mensajes = ttk.Treeview(
+    frame_mensajes, height=6, show="headings", columns=("tipo", "linea", "mensaje"),
+)
+tabla_mensajes.heading("tipo", text="Tipo")
+tabla_mensajes.heading("linea", text="Linea")
+tabla_mensajes.heading("mensaje", text="Mensaje")
+tabla_mensajes.column("tipo", width=130, anchor="w")
+tabla_mensajes.column("linea", width=60, anchor="w")
+tabla_mensajes.column("mensaje", width=700, anchor="w")
+tabla_mensajes.tag_configure("error", foreground="#c62828")
+tabla_mensajes.tag_configure("aviso", foreground="#b26a00")
+scroll_msg = ttk.Scrollbar(frame_mensajes, orient="vertical", command=tabla_mensajes.yview)
+tabla_mensajes.configure(yscrollcommand=scroll_msg.set)
+tabla_mensajes.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+scroll_msg.pack(side=tk.RIGHT, fill=tk.Y)
+
+estado_semantico = tk.Label(pestana_semantico, text="", font=("Arial", 10, "bold"))
+estado_semantico.pack(anchor="w", padx=10, pady=(0, 8))
+
+if __name__ == "__main__":
+    ventana.mainloop()

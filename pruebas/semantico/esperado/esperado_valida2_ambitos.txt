@@ -1,0 +1,4 @@
+SIMBOLO	total	int	0	1	si	si
+SIMBOLO	i	int	0	2	si	si
+SIMBOLO	cuadrado	int	1	4	si	si
+ANALISIS_SEMANTICO	correcto	0	0

@@ -1,0 +1,5 @@
+SIMBOLO	a	int	0	1	si	si
+SIMBOLO	b	float	0	2	si	si
+SIMBOLO	c	float	0	3	si	si
+SIMBOLO	d	int	0	4	si	si
+ANALISIS_SEMANTICO	correcto	0	0

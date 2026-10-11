@@ -1,0 +1,8 @@
+float nota = 85.5;
+int aprobado = 0;
+if (nota >= 70) {
+    aprobado = 1;
+    print(nota);
+} else {
+    print(aprobado);
+}

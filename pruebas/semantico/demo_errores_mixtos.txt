@@ -1,0 +1,8 @@
+int edad = 20;
+float promedio = 8.5;
+int resultado = promedio * 2;
+if (edad >= 18) {
+    int mayor = 1;
+    print(total);
+}
+suma = edad + 1;

@@ -1,0 +1,5 @@
+int a = 10;
+int b = a / 0;
+float c = a / 0.0;
+print(b);
+print(c);

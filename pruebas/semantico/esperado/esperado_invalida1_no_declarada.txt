@@ -1,0 +1,4 @@
+SIMBOLO	a	int	0	1	si	si
+ERROR_SEMANTICO	2	variable 'b' sin declarar
+ERROR_SEMANTICO	3	variable 'c' sin declarar
+ANALISIS_SEMANTICO	incorrecto	2	0

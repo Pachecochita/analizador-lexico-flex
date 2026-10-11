@@ -1,0 +1,8 @@
+float pi = 3.14;
+int entero = pi;
+int otro = 2.5;
+int n = 4;
+n = pi * 2;
+print(entero);
+print(otro);
+print(n);

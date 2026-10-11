@@ -20,9 +20,9 @@ int huboError = 0;
 %token ID NUM_ENTERO NUM_DECIMAL
 %token OPREL ASIG
 
+%nonassoc OPREL
 %left '+' '-'
 %left '*' '/'
-%nonassoc OPREL
 
 %%
 

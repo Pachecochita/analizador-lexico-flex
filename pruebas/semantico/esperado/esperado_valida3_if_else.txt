@@ -1,0 +1,3 @@
+SIMBOLO	nota	float	0	1	si	si
+SIMBOLO	aprobado	int	0	2	si	si
+ANALISIS_SEMANTICO	correcto	0	0

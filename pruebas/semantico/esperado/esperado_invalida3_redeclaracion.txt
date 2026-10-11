@@ -1,0 +1,5 @@
+SIMBOLO	a	int	0	1	si	si
+SIMBOLO	b	int	1	4	si	si
+ERROR_SEMANTICO	2	la variable 'a' ya fue declarada en este bloque (linea 1)
+ERROR_SEMANTICO	5	la variable 'b' ya fue declarada en este bloque (linea 4)
+ANALISIS_SEMANTICO	incorrecto	2	0

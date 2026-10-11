@@ -1,0 +1,8 @@
+SIMBOLO	pi	float	0	1	si	si
+SIMBOLO	entero	int	0	2	si	si
+SIMBOLO	otro	int	0	3	si	si
+SIMBOLO	n	int	0	4	si	si
+ERROR_SEMANTICO	2	no se puede inicializar la variable int 'entero' con un valor float (se pierde la parte decimal)
+ERROR_SEMANTICO	3	no se puede inicializar la variable int 'otro' con un valor float (se pierde la parte decimal)
+ERROR_SEMANTICO	5	no se puede asignar un valor float a la variable int 'n' (se pierde la parte decimal)
+ANALISIS_SEMANTICO	incorrecto	3	0

@@ -1,0 +1,10 @@
+SIMBOLO	edad	int	0	1	si	si
+SIMBOLO	promedio	float	0	2	si	si
+SIMBOLO	resultado	int	0	3	si	no
+SIMBOLO	mayor	int	1	5	si	no
+ERROR_SEMANTICO	3	no se puede inicializar la variable int 'resultado' con un valor float (se pierde la parte decimal)
+ADVERTENCIA	3	variable 'resultado' declarada pero nunca usada
+ADVERTENCIA	5	variable 'mayor' declarada pero nunca usada
+ERROR_SEMANTICO	6	variable 'total' sin declarar
+ERROR_SEMANTICO	8	variable 'suma' sin declarar
+ANALISIS_SEMANTICO	incorrecto	3	2

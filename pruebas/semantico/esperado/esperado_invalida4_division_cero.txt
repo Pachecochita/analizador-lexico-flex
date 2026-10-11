@@ -1,0 +1,6 @@
+SIMBOLO	a	int	0	1	si	si
+SIMBOLO	b	int	0	2	si	si
+SIMBOLO	c	float	0	3	si	si
+ERROR_SEMANTICO	2	no se puede dividir entre cero
+ERROR_SEMANTICO	3	no se puede dividir entre cero
+ANALISIS_SEMANTICO	incorrecto	2	0
