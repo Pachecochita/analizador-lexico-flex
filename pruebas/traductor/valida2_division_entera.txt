@@ -1,0 +1,13 @@
+int a = 7;
+int cero = 0;
+int neg = cero - 7;
+print(a / 2);
+print(neg / 2);
+print(a / 2.0);
+print(100 / 7 / 2);
+print(1 / 2 * 10);
+print(10 / 4 * 4);
+float x = 10 / 4;
+print(x);
+float y = 10 / 4.0;
+print(y);

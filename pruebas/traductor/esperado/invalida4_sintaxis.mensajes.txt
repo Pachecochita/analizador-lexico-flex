@@ -1,0 +1,2 @@
+ERROR_SINTACTICO	2	error de sintaxis cerca de 'print'
+TRADUCCION	incorrecta	C++	1	0

@@ -1,0 +1,16 @@
+// Fibonacci: imprime solo los primeros 10 numeros pares de la serie
+int pares = 10;
+int encontrados = 0;
+int anterior = 0;
+int actual = 1;
+
+while (encontrados < pares) {
+    // un numero es par si al dividirlo entre 2 y volver a multiplicar no cambia
+    if (anterior - (anterior / 2) * 2 == 0) {
+        print(anterior);
+        encontrados = encontrados + 1;
+    }
+    int siguiente = anterior + actual;
+    anterior = actual;
+    actual = siguiente;
+}

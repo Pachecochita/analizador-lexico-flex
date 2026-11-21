@@ -1,0 +1,2 @@
+ERROR_SEMANTICO	2	no se puede dividir entre cero
+CODIGO_INTERMEDIO	incorrecto	0	0	1	0

@@ -1,0 +1,4 @@
+ADVERTENCIA	1	variable 'a' declarada pero nunca usada
+ERROR_SEMANTICO	3	no se puede asignar un valor float a la variable int 'a' (se pierde la parte decimal)
+ERROR_SEMANTICO	4	variable 'b' sin declarar
+TRADUCCION	incorrecta	C++	2	1

@@ -1,12 +1,19 @@
-# Analizadores Léxico, Sintáctico y Semántico - MiniLang
+# Compilador MiniLang (Flex y Bison)
 
-Tres analizadores para el lenguaje de prueba **MiniLang**:
+Un pequeño compilador para el lenguaje de prueba **MiniLang**, con estas partes:
 
 - **Léxico**, construido con **Flex** (`analizador.l`).
 - **Sintáctico**, construido con **Flex + Bison** (`lexico_sintactico.l` + `sintactico.y`).
 - **Semántico**, construido con **Flex + Bison** (`lexico_semantico.l` + `semantico.y`).
+- **Tabla de símbolos** (con ámbitos por bloque), que arma el analizador semántico y se muestra en su propia pestaña **Tabla de Simbolos**.
+- **Generador de código intermedio** (código de tres direcciones, cuádruplas), con **Flex + Bison** (`lexico_intermedio.l` + `intermedio.y`).
+- **Traductor** de MiniLang a **C++** o **JavaScript**, con **Flex + Bison** (`lexico_traductor.l` + `traductor.y`).
 
-Una sola interfaz gráfica en **Python (Tkinter)** con tres pestañas llama a los tres ejecutables.
+Una sola interfaz gráfica en **Python (Tkinter)** con seis pestañas llama a los ejecutables.
+
+Documentación:
+- [`docs/Manual_MiniLang.docx`](docs/Manual_MiniLang.docx): el lenguaje completo.
+- [`docs/Documentacion_Compilador.docx`](docs/Documentacion_Compilador.docx): arquitectura del compilador, tabla de símbolos, código intermedio y plan de pruebas.
 
 Proyecto de la asignatura de Compiladores, UTESA.
 
@@ -22,7 +29,16 @@ analizador-lexico-flex/
 ├── lexico_semantico.l          # Especificación Flex del semantico (los tokens llevan valor)
 ├── semantico.y                 # Gramática Bison con las acciones semanticas
 ├── semantico.exe               # Ejecutable del analizador semantico
-├── gui.py                      # Interfaz gráfica (Python / Tkinter, 3 pestañas)
+├── lexico_traductor.l          # Especificación Flex del traductor
+├── traductor.y                 # Gramática Bison con la generación de código C++ / JavaScript
+├── traductor.exe               # Ejecutable del traductor
+├── lexico_intermedio.l         # Especificación Flex del generador de código intermedio
+├── intermedio.y                # Gramática Bison que genera las cuádruplas
+├── intermedio.exe              # Ejecutable del generador de código intermedio
+├── gui.py                      # Interfaz gráfica (Python / Tkinter, 6 pestañas)
+├── docs/
+│   ├── Manual_MiniLang.docx           # Documentación completa del lenguaje
+│   └── Documentacion_Compilador.docx  # Documentación del compilador y plan de pruebas
 ├── prueba.txt                  # Archivo de prueba rápida (lexico)
 ├── pruebas/                    # Casos de prueba y resultados esperados
 │   ├── prueba1_declaraciones.txt ... prueba5_programa_completo.txt
@@ -38,6 +54,16 @@ analizador-lexico-flex/
 │       ├── invalida1_no_declarada.txt, invalida2_tipos.txt, invalida3_redeclaracion.txt,
 │       │   invalida4_division_cero.txt, invalida5_sintaxis.txt
 │       └── esperado/            # Salida esperada de cada caso
+│   └── traductor/               # Casos de prueba del traductor
+│       ├── valida1_aritmetica.txt ... valida8_programa_completo.txt (+ .salida con lo que debe imprimir)
+│       ├── invalida1_sombreado.txt ... invalida4_sintaxis.txt
+│       └── esperado/            # Traducción a .cpp y .js de cada caso válido
+│   └── intermedio/              # Casos de prueba del generador de código intermedio
+│       ├── valida1_aritmetica.txt ... valida8_programa_completo.txt, calificaciones.txt,
+│       │   fibonacci.txt, fibonacci_pares.txt, anidado.txt, sombreado.txt (+ .salida)
+│       ├── invalida_no_declarada.txt, invalida_division_cero.txt, invalida_sintaxis.txt
+│       ├── interpretar_tac.py   # Ejecuta las cuádruplas y compara con el .salida
+│       └── esperado/            # Código de tres direcciones esperado de cada caso
 └── README.md
 ```
 
@@ -46,15 +72,17 @@ analizador-lexico-flex/
 Requisito: tener **Python 3** instalado (Tkinter viene incluido).
 
 1. Descargar o clonar el repositorio.
-2. Dejar `gui.py`, `analizador.exe`, `sintactico.exe` y `semantico.exe` en la misma carpeta.
+2. Dejar `gui.py`, `analizador.exe`, `sintactico.exe`, `semantico.exe`, `traductor.exe` e `intermedio.exe` en la misma carpeta.
 3. Abrir una terminal en esa carpeta y ejecutar:
 
 ```
 python gui.py
 ```
 
-4. En la ventana, cambiar entre las pestañas **Analisis Lexico**, **Analisis Sintactico** y
-   **Analisis Semantico**. En cada una: escribir código o usar **Cargar archivo**, y presionar **Analizar**.
+4. En la ventana, cambiar entre las pestañas **Analisis Lexico**, **Analisis Sintactico**,
+   **Analisis Semantico**, **Tabla de Simbolos**, **Traductor** y **Codigo Intermedio**. En cada una: escribir código o usar
+   **Cargar archivo**, y presionar **Analizar** (en el traductor, elegir C++ o JavaScript y presionar
+   **Traducir**; en código intermedio, presionar **Generar**).
 
 ## Cómo compilar los analizadores desde el código fuente
 
@@ -96,11 +124,26 @@ Herramientas: **MSYS2** con `flex`, `bison` y `gcc` (https://www.msys2.org).
    flex -o lex_semantico.c lexico_semantico.l
    gcc semantico.tab.c lex_semantico.c -o semantico.exe
    ```
-7. Pruebas rápidas por consola (opcional):
+7. Compilar el traductor (mismo esquema de nombres propios con `-o`):
+   ```
+   bison -d -o traductor.tab.c traductor.y
+   flex -o lex_traductor.c lexico_traductor.l
+   gcc traductor.tab.c lex_traductor.c -o traductor.exe
+   ```
+8. Compilar el generador de código intermedio (también con nombres propios):
+   ```
+   bison -d -o intermedio.tab.c intermedio.y
+   flex -o lex_intermedio.c lexico_intermedio.l
+   gcc intermedio.tab.c lex_intermedio.c -o intermedio.exe
+   ```
+9. Pruebas rápidas por consola (opcional):
    ```
    .\analizador.exe prueba.txt
    .\sintactico.exe pruebas\sintactico\valida1_declaraciones.txt
    .\semantico.exe pruebas\semantico\demo_errores_mixtos.txt
+   .\traductor.exe pruebas\traductor\valida8_programa_completo.txt cpp
+   .\traductor.exe pruebas\traductor\valida8_programa_completo.txt js
+   .\intermedio.exe pruebas\intermedio\fibonacci.txt
    ```
 
 ## Lenguaje de prueba: "MiniLang"
@@ -323,3 +366,143 @@ Cada archivo de `pruebas/semantico/` tiene su salida esperada en `pruebas/semant
   el cero resulta de calcular algo como `2 - 2`.
 - No se evalúan los valores de las expresiones, solo sus tipos.
 
+## Traductor (MiniLang a C++ / JavaScript)
+
+Traduce un programa MiniLang correcto al lenguaje elegido. Usa traducción dirigida por la sintaxis:
+las acciones de Bison construyen el texto del lenguaje destino mientras se reconoce cada regla, y
+antes de generar nada se hace el mismo análisis semántico del apartado anterior. Si el programa tiene
+errores no se genera código, solo se informan los errores.
+
+### Uso
+
+```
+traductor.exe programa.txt cpp            # traduce a C++
+traductor.exe programa.txt js             # traduce a JavaScript
+traductor.exe programa.txt cpp --crudo    # solo el codigo (listo para redirigir a un archivo)
+```
+
+Para comprobar el resultado:
+
+```
+traductor.exe pruebas\traductor\valida8_programa_completo.txt cpp --crudo > salida.cpp
+g++ salida.cpp -o salida.exe && salida.exe
+traductor.exe pruebas\traductor\valida8_programa_completo.txt js --crudo > salida.js
+node salida.js
+```
+
+### Formato de salida (consola, sin `--crudo`)
+
+```
+ADVERTENCIA | ERROR_SEMANTICO | ERROR_SINTACTICO | ERROR_LEXICO | ERROR_TRADUCCION <TAB>linea<TAB>mensaje
+TRADUCCION<TAB>correcta|incorrecta<TAB>C++|JavaScript<TAB>total_errores<TAB>total_advertencias
+CODIGO<TAB>linea de codigo traducido      (una por cada linea, solo si la traduccion es correcta)
+```
+
+### Equivalencias principales
+
+| MiniLang | C++ | JavaScript |
+|---|---|---|
+| `int x = 5;` | `int x = 5;` | `let x = 5;` |
+| `float y = 2.5;` | `double y = 2.5;` | `let y = 2.5;` |
+| `int z;` | `int z = 0;` | `let z = 0;` |
+| `print(x);` | `std::cout << x << std::endl;` | `console.log(x);` |
+| `a / b` (ambos `int`) | `a / b` | `Math.trunc(a / b)` |
+| `a < b` usado como valor | `a < b` | `Number(a < b)` |
+| `a == b` / `a != b` | `a == b` / `a != b` | `a === b` / `a !== b` |
+
+Además: los nombres que son palabras reservadas del destino (`class`, `new`, `Math`...) reciben el sufijo
+`_mini`, y los literales con ceros a la izquierda se normalizan (`007` sale como `7`). El detalle de
+cada decisión está en el manual (`docs/Manual_MiniLang.docx`, sección 9).
+
+### Pruebas del traductor
+
+Cada programa válido de `pruebas/traductor/` tiene su salida esperada (`.salida`) y su traducción en
+`pruebas/traductor/esperado/`. Las ocho traducciones se compilaron con `g++` y se ejecutaron con `node`,
+y todas imprimen lo mismo que el valor calculado a mano.
+
+| Prueba | Qué verifica |
+|---|---|
+| `valida1_aritmetica.txt` | Operaciones y precedencia |
+| `valida2_division_entera.txt` | División entera frente a decimal |
+| `valida3_comparaciones.txt` | Comparaciones usadas como valores 0/1 |
+| `valida4_control.txt` | `if`/`else` anidados y `while` |
+| `valida5_nombres_reservados.txt` | Renombrado de identificadores |
+| `valida6_ceros_iniciales.txt` | Normalización de literales |
+| `valida7_sin_valor.txt` | Variables declaradas sin valor inicial |
+| `valida8_programa_completo.txt` | Programa que combina todo lo anterior |
+| `invalida1_sombreado.txt` | `ERROR_TRADUCCION`: variable que oculta a otra |
+| `invalida2_numero_grande.txt` | `ERROR_TRADUCCION`: entero que no cabe en 32 bits |
+| `invalida3_error_semantico.txt` | Errores semánticos: no se genera código |
+| `invalida4_sintaxis.txt` | Error de sintaxis: no se genera código |
+
+### Limitaciones de la traducción
+
+- El sombreado de variables (declarar en un bloque una variable con el nombre de otra del bloque
+  exterior) es solo una advertencia en el analizador semántico, pero el traductor lo rechaza, porque
+  en JavaScript y en C++ el resultado no sería el mismo que en MiniLang.
+- JavaScript imprime `-0` donde C++ imprime `0` (por ejemplo `(0 - 1) / 2`).
+- Los decimales pueden verse distinto al imprimirse (`cout` muestra 6 cifras significativas).
+- Los `int` de C++ son de 32 bits y se desbordan; en JavaScript no.
+- Los comentarios no pasan al código traducido.
+- MiniLang no tiene el menos unario: se escribe `0 - x`.
+
+## Generador de código intermedio
+
+Genera **código de tres direcciones** en forma de cuádruplas `(operador, arg1, arg2, resultado)`.
+Hace las mismas comprobaciones que el analizador semántico y, si el programa no tiene errores, escribe
+las cuádruplas. Las expresiones se descomponen con variables temporales (`t1`, `t2`...) y las
+estructuras `if`, `if/else` y `while` se convierten en etiquetas (`L1`, `L2`...) y saltos.
+
+```
+intermedio.exe programa.txt
+```
+
+Ejemplo (`pruebas/intermedio/fibonacci.txt`):
+
+```
+    cantidad = 10              L1:
+    anterior = 0                   t1 = contador <= cantidad
+    actual = 1                     ifFalse t1 goto L2
+    contador = 1                   print anterior
+                                   ...
+                                   goto L1
+                               L2:
+```
+
+| Operador | Forma legible | Qué hace |
+|---|---|---|
+| `=` | `x = a` | Copia |
+| `+ - * /` | `t = a + b` | Aritmética (`/` si algún operando es `float`) |
+| `div` | `t = a div b` | División entera (`int` entre `int`) |
+| `< > <= >= == !=` | `t = a < b` | Comparación, vale 1 o 0 |
+| `label` / `goto` | `L1:` / `goto L1` | Etiqueta y salto |
+| `ifFalse` | `ifFalse t goto L1` | Salta si `t` vale 0 |
+| `print` | `print a` | Muestra un valor |
+
+### Formato de salida (consola)
+
+```
+ADVERTENCIA | ERROR_SEMANTICO | ERROR_SINTACTICO | ERROR_LEXICO <TAB>linea<TAB>mensaje
+CODIGO_INTERMEDIO<TAB>correcto|incorrecto<TAB>cuadruplas<TAB>temporales<TAB>errores<TAB>advertencias
+CUADRUPLA<TAB>numero<TAB>operador<TAB>arg1<TAB>arg2<TAB>resultado     (solo si es correcto)
+TAC<TAB>instruccion en forma legible                                    (solo si es correcto)
+```
+
+### Pruebas del generador de código intermedio
+
+Los 13 programas válidos de `pruebas/intermedio/` tienen su salida esperada (`.salida`, calculada a mano).
+El script `interpretar_tac.py` ejecuta las cuádruplas de cada uno con un intérprete sencillo y comprueba que
+el programa haga lo mismo que el original:
+
+```
+python pruebas/intermedio/interpretar_tac.py
+```
+
+Debe terminar con `fallas: 0`. Los 3 casos inválidos (`invalida_*.txt`) no generan código y muestran el error.
+El código de tres direcciones esperado de cada caso está en `pruebas/intermedio/esperado/`.
+
+### Limitaciones
+
+- No hay optimización: cada operación crea un temporal nuevo y las constantes no se calculan de antemano.
+- Si dos variables de bloques distintos se llaman igual, la segunda recibe un sufijo (`x_2`).
+- El traductor genera C++/JavaScript directamente desde la sintaxis; no parte de las cuádruplas.

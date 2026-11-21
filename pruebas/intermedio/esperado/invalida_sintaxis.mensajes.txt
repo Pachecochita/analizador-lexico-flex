@@ -1,0 +1,2 @@
+ERROR_SINTACTICO	1	error de sintaxis cerca de ';'
+CODIGO_INTERMEDIO	incorrecto	0	0	1	0

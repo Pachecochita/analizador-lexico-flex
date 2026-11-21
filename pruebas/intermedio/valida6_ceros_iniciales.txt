@@ -1,0 +1,8 @@
+int a = 007;
+int b = 08;
+int c = 000;
+float d = 00.5;
+float e = 0.25;
+print(a + b);
+print(c);
+print(d + e);

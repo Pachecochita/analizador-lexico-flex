@@ -1,0 +1,2 @@
+ERROR_TRADUCCION	3	la variable 'x' oculta a otra del bloque exterior (linea 1); usa otro nombre para poder traducir
+TRADUCCION	incorrecta	C++	1	0

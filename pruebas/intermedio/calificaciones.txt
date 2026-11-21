@@ -1,0 +1,29 @@
+// Calificaciones: cambia estos tres valores por las notas que quieras
+float nota1 = 85.5;
+float nota2 = 70;
+float nota3 = 92.0;
+
+// Promedio de las tres notas
+float promedio = (nota1 + nota2 + nota3) / 3.0;
+
+// Nota mas alta
+float mayor = nota1;
+if (nota2 > mayor) {
+    mayor = nota2;
+}
+if (nota3 > mayor) {
+    mayor = nota3;
+}
+
+// Resultado: 1 = aprobado (promedio >= 70), 0 = reprobado
+int aprobado = 0;
+if (promedio >= 70) {
+    aprobado = 1;
+}
+
+print(nota1);
+print(nota2);
+print(nota3);
+print(promedio);
+print(mayor);
+print(aprobado);

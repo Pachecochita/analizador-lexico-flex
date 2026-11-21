@@ -1,0 +1,28 @@
+int n = 5;
+int fact = 1;
+int i = 1;
+while (i <= n) {
+    fact = fact * i;
+    i = i + 1;
+}
+print(fact);
+
+int cuenta = 3;
+while (cuenta > 0) {
+    print(cuenta);
+    cuenta = cuenta - 1;
+}
+
+int k = 1;
+while (k <= 6) {
+    int mitad = k / 2;
+    int resto = k - mitad * 2;
+    if (resto == 0) {
+        print(k);
+    } else {
+        if (k == 5) {
+            print(100);
+        }
+    }
+    k = k + 1;
+}

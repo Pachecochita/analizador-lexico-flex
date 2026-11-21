@@ -1,0 +1,24 @@
+// if / else if / else y un while con un if adentro
+int i = 1;
+int pares = 0;
+int impares = 0;
+while (i <= 6) {
+    if (i - (i / 2) * 2 == 0) {
+        pares = pares + 1;
+    } else {
+        impares = impares + 1;
+    }
+    i = i + 1;
+}
+print(pares);
+print(impares);
+int nota = 85;
+if (nota >= 90) {
+    print(1);
+} else {
+    if (nota >= 70) {
+        print(2);
+    } else {
+        print(3);
+    }
+}

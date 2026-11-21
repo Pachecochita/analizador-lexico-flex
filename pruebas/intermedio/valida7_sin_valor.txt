@@ -1,0 +1,6 @@
+int y;
+float z;
+print(y);
+y = y + 5;
+print(y);
+print(z);

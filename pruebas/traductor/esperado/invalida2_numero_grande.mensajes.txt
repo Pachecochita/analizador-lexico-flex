@@ -1,0 +1,2 @@
+ERROR_TRADUCCION	1	el numero 3000000000 es demasiado grande para un int de 32 bits
+TRADUCCION	incorrecta	C++	1	0

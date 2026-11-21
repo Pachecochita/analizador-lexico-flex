@@ -1,0 +1,13 @@
+// Serie de Fibonacci: cambia "cantidad" para imprimir mas o menos terminos
+int cantidad = 10;
+int anterior = 0;
+int actual = 1;
+int contador = 1;
+
+while (contador <= cantidad) {
+    print(anterior);
+    int siguiente = anterior + actual;
+    anterior = actual;
+    actual = siguiente;
+    contador = contador + 1;
+}
